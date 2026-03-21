@@ -1,17 +1,16 @@
-import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import colors from "../constants/colors";
 import { useAuth } from "../services/auth";
 import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignUpScreen from "../screens/SignUpScreen";
-import type { AppStackParamList, AuthStackParamList } from "./types";
+import SyllabusScreen from "../screens/SyllabusScreen";
 
-const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const AppStack = createNativeStackNavigator<AppStackParamList>();
+const AuthStack = createNativeStackNavigator();
+const AppStack = createNativeStackNavigator();
 
 function AuthStackNavigator() {
   return (
@@ -35,13 +34,18 @@ function AppStackNavigator() {
       }}
     >
       <AppStack.Screen name="Home" component={HomeScreen} />
+      <AppStack.Screen
+        name="Syllabus"
+        component={SyllabusScreen}
+        options={{ headerShown: true, title: "CAT Syllabus" }}
+      />
     </AppStack.Navigator>
   );
 }
 
 function AuthLoadingScreen() {
   return (
-    <View style={styles.loading} accessibilityLabel="Loading authentication">
+    <View style={styles.loading}>
       <ActivityIndicator animating size="large" color={colors.primary} />
     </View>
   );
@@ -49,27 +53,6 @@ function AuthLoadingScreen() {
 
 export default function AppNavigator() {
   const { user, loading } = useAuth();
-
-  // #region agent log
-  useEffect(() => {
-    fetch("http://127.0.0.1:7242/ingest/068bdc0a-5c2a-46a4-bbca-105525674a7c", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "AppNavigator.tsx:useEffect",
-        message: "Auth state snapshot",
-        data: {
-          hypothesisId: "H1-verify",
-          runId: "post-fix",
-          loading,
-          hasUser: !!user,
-          stacksMountWithoutNestedContainer: !loading,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  }, [loading, user]);
-  // #endregion
 
   if (loading) {
     return <AuthLoadingScreen />;

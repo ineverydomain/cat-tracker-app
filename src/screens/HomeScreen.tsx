@@ -1,9 +1,15 @@
 import { StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Button, Card, Text } from "react-native-paper";
 import colors from "../constants/colors";
+import type { AppStackParamList } from "../navigation/types";
 import { useAuth } from "../services/auth";
 
+type HomeNav = NativeStackNavigationProp<AppStackParamList, "Home">;
+
 export default function HomeScreen() {
+  const navigation = useNavigation<HomeNav>();
   const { user, signOut } = useAuth();
 
   return (
@@ -18,6 +24,15 @@ export default function HomeScreen() {
           </Text>
         </Card.Content>
         <Card.Actions style={styles.actions}>
+          <Button
+            mode="outlined"
+            onPress={() => navigation.navigate("Syllabus")}
+            textColor={colors.primary}
+            style={styles.actionButton}
+          >
+            Syllabus
+          </Button>
+
           <Button
             mode="contained"
             onPress={() => {
@@ -62,9 +77,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   actions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
+    gap: 8,
     paddingBottom: 16,
     paddingTop: 8,
+  },
+  actionButton: {
+    minWidth: 120,
   },
   logoutButton: {
     minWidth: 120,
