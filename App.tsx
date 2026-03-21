@@ -1,57 +1,35 @@
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { supabase } from "./src/services/supabase";
+import { NavigationContainer } from "@react-navigation/native";
+import { Provider as PaperProvider } from "react-native-paper";
+import { AuthProvider } from "./src/services/auth";
+import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
+  // #region agent log
   useEffect(() => {
-    testConnection();
+    fetch("http://127.0.0.1:7242/ingest/068bdc0a-5c2a-46a4-bbca-105525674a7c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "App.tsx:useEffect",
+        message: "Root App mounted; wraps AppNavigator with NavigationContainer",
+        data: {
+          hypothesisId: "H1-verify",
+          runId: "post-fix",
+          outerNavigationContainer: true,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
   }, []);
-
-  const testConnection = async () => {
-    console.log("🔍 Step 1: Testing Supabase connection...");
-    console.log("URL:", process.env.EXPO_PUBLIC_SUPABASE_URL);
-    console.log("Key exists:", !!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY);
-
-    console.log("🔍 Step 2: Fetching topics...");
-    const { data, error, status, statusText } = await supabase
-      .from("topics")
-      .select("*")
-      .limit(5);
-
-    console.log("Status:", status);
-    console.log("Status Text:", statusText);
-
-    if (error) {
-      console.error("❌ Error details:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-      });
-    } else {
-      console.log("✅ Success! Topics found:", data.length);
-      console.log("Topics:", data);
-    }
-  };
-
+  // #endregion
   return (
-    <View style={styles.container}>
-      <Text>Testing Supabase Connection...</Text>
-      <Text style={styles.small}>Check console for results</Text>
-    </View>
+    <PaperProvider>
+      <AuthProvider>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </AuthProvider>
+    </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  small: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 10,
-  },
-});
