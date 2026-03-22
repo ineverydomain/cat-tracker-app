@@ -193,9 +193,9 @@ export function useSyllabusSection(
   }, [load]);
 
   const updateStatus = useCallback(
-    async (topicId: string, status: ProgressStatus) => {
+    async (topicId: string, status: ProgressStatus): Promise<boolean> => {
       if (!userId) {
-        return;
+        return false;
       }
 
       const existing = progressRef.current[topicId];
@@ -212,10 +212,12 @@ export function useSyllabusSection(
           ...prev,
           [topicId]: updated,
         }));
+        return true;
       } catch (e) {
         const message =
           e instanceof Error ? e.message : "Could not update progress.";
         setError(message);
+        return false;
       }
     },
     [userId]

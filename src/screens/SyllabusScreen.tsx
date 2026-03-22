@@ -14,8 +14,11 @@ import TopicCard from "../components/TopicCard";
 import colors from "../constants/colors";
 import { useSyllabusSection } from "../hooks/useSyllabusSection";
 import { useAuth } from "../services/auth";
+import { supabase } from "../services/supabase";
 import type { ProgressStatus, Section, Topic } from "../types";
 import type { SyllabusTabParamList } from "../navigation/types";
+import CountdownTimer from "../components/CountdownTimer";
+import { updateUserStreak } from "../utils/streakUtils";
 
 type SyllabusSearchContextValue = {
   query: string;
@@ -84,7 +87,7 @@ function SectionTopicsTab() {
   );
 
   const handleStatusChange = useCallback(
-    (topicId: string, status: ProgressStatus) => {
+    async (topicId: string, newStatus: ProgressStatus) => {
       // #region agent log
       fetch(
         "http://127.0.0.1:7242/ingest/068bdc0a-5c2a-46a4-bbca-105525674a7c",
@@ -98,20 +101,30 @@ function SectionTopicsTab() {
               hypothesisId: "H1-verify",
               runId: "post-fix",
               topicId,
-              status,
+              status: newStatus,
               statusIsDefined:
-                status === "not_started" ||
-                status === "in_progress" ||
-                status === "done",
+                newStatus === "not_started" ||
+                newStatus === "in_progress" ||
+                newStatus === "done",
             },
             timestamp: Date.now(),
           }),
-        }
+        },
       ).catch(() => {});
       // #endregion
-      void updateStatus(topicId, status);
+
+      const ok = await updateStatus(topicId, newStatus);
+
+      if (ok && newStatus === "done" && user?.id) {
+        try {
+          const newStreak = await updateUserStreak(user.id, supabase);
+          console.log("Streak updated:", newStreak);
+        } catch (e) {
+          console.error("Streak update failed:", e);
+        }
+      }
     },
-    [updateStatus],
+    [updateStatus, user?.id],
   );
 
   const emptyMessage =
@@ -203,6 +216,7 @@ export default function SyllabusScreen() {
           style={styles.search}
           inputStyle={styles.searchInput}
         />
+        <CountdownTimer examDate={new Date("2026-11-29")} />
 
         <Tab.Navigator
           screenOptions={{

@@ -6,6 +6,8 @@ import colors from "../constants/colors";
 import type { AppStackParamList } from "../navigation/types";
 import { useAuth } from "../services/auth";
 import CountdownTimer from "../components/CountdownTimer";
+import StreakDisplay from "../components/StreakDisplay";
+
 type HomeNav = NativeStackNavigationProp<AppStackParamList, "Home">;
 
 export default function HomeScreen() {
@@ -45,6 +47,7 @@ export default function HomeScreen() {
             Logout
           </Button>
           <CountdownTimer examDate={new Date("2026-11-29")} />
+          <StreakDisplay userId={user!.id} />
         </Card.Actions>
       </Card>
     </View>
