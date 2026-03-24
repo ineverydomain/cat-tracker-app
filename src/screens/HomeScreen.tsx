@@ -8,10 +8,13 @@ import { useAuth } from "../services/auth";
 import CountdownTimer from "../components/CountdownTimer";
 import StreakDisplay from "../components/StreakDisplay";
 
-type HomeNav = NativeStackNavigationProp<AppStackParamList, "Home">;
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  AppStackParamList,
+  "Home"
+>;
 
 export default function HomeScreen() {
-  const navigation = useNavigation<HomeNav>();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const { user, signOut } = useAuth();
 
   return (
@@ -45,6 +48,13 @@ export default function HomeScreen() {
             style={styles.logoutButton}
           >
             Logout
+          </Button>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate("Progress")}
+            style={{ marginTop: 16 }}
+          >
+            View Progress
           </Button>
           <CountdownTimer examDate={new Date("2026-11-29")} />
           <StreakDisplay userId={user!.id} />

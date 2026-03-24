@@ -1,3 +1,8 @@
+export type RootStackParamList = {
+  Auth: undefined;
+  App: undefined;
+};
+
 export type AuthStackParamList = {
   Login: undefined;
   SignUp: undefined;
@@ -6,10 +11,5 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Home: undefined;
   Syllabus: undefined;
-};
-
-export type SyllabusTabParamList = {
-  VARC: undefined;
-  DILR: undefined;
-  QA: undefined;
+  Progress: undefined;
 };
